@@ -6,19 +6,25 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -60,4 +66,33 @@ public class UserService implements UserDetailsService {
         userRepository.save(existingUser);
     }
 
+    //Тестовые пользователи 1. admin admin (ADMIN); 2. user user (USER)
+    @PostConstruct
+    public void init() {
+        Role adminRole = getOrCreateRole("ROLE_ADMIN");
+        Role userRole = getOrCreateRole("ROLE_USER");
+
+        addTestUser("admin", "$2a$12$NG4dwvCIbCAiXshrdvfSZ.5pgJCIJ7OYCc4CxXXAJbmQQ.Zbtj6UW", Set.of(adminRole));
+        addTestUser("user", "$2a$12$GK7ws8fzQo..uHlbNT.YSOL0UBaJauundfOVipzxAUh1Mk0PxAT0W", Set.of(userRole));
+    }
+
+    private void addTestUser(String username, String password, Set<Role> roles) {
+        User byUsername = userRepository.findByUsername(username);
+        if (byUsername == null) {
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setRoles(roles);
+            userRepository.save(user);
+        }
+    }
+
+    private Role getOrCreateRole(String roleName) {
+        Role role = roleRepository.findByName(roleName);
+        if (role == null) {
+            role = new Role(roleName);
+            roleRepository.save(role);
+        }
+        return role;
+    }
 }
