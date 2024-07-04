@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Form</title>
+</head>
+<body>
+<h2 th:text="${user.id == null} ? 'Save User' : 'Edit User'"/>
+<br>
+<form th:action="@{${#strings.equals(user.id, null) ? '/admin/create' : '/admin/update'}}" th:object="${user}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" th:field="*{username}"/>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" th:field="*{password}"/>
+    </div>
+    <br>
+    <div>
+        <button type="submit" th:text="${user.id == null} ? 'Add' : 'Save changes'"></button>
+    </div>
+    <br>
+</form>
+<a href="/admin">Back</a>
+<br>
+</body>
+</html>
