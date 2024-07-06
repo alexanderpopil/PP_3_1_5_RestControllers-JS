@@ -7,6 +7,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -23,6 +24,16 @@ public class RoleDaoImpl implements RoleDao {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<Role> findAll() {
+        return entityManager.createQuery("SELECT r FROM Role r", Role.class).getResultList();
+    }
+
+    @Override
+    public Role findById(Long id) {
+        return entityManager.find(Role.class, id);
     }
 
     @Override

@@ -19,7 +19,6 @@ public class DataInitializer implements ApplicationRunner {
     private final UserService userService;
     private final RoleService roleService;
 
-    @Autowired
     public DataInitializer(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
