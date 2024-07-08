@@ -43,9 +43,10 @@ public class AdminController {
     public String createUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "roles", required = false) List<Long> roleIds) {
         if (roleIds != null) {
-            Set<Role> roles = roleIds.stream()
-                    .map(roleId -> roleService.findById(roleId))
-                    .collect(Collectors.toSet());
+//            Set<Role> roles = roleIds.stream()
+//                    .map(roleId -> roleService.findById(roleId))
+//                    .collect(Collectors.toSet());
+            Set<Role> roles = roleService.findByIds(roleIds);
             user.setRoles(roles);
         }
         userService.save(user);
@@ -64,9 +65,10 @@ public class AdminController {
     public String updateUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "roles", required = false) List<Long> roleIds) {
         if (roleIds != null) {
-            Set<Role> roles = roleIds.stream()
-                    .map(roleId -> roleService.findById(roleId))
-                    .collect(Collectors.toSet());
+//            Set<Role> roles = roleIds.stream()
+//                    .map(roleId -> roleService.findById(roleId))
+//                    .collect(Collectors.toSet());
+            Set<Role> roles = roleService.findByIds(roleIds);
             user.setRoles(roles);
         }
         userService.update(user);

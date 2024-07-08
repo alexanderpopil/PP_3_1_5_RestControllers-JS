@@ -21,12 +21,14 @@ import java.util.Set;
 public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final UserDao userDao;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, BCryptPasswordEncoder passwordEncoder) {
         this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+//    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -58,9 +60,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     @Transactional
     public void save(User user) {
-        if (!user.getPassword().startsWith("$2a$") && !user.getPassword().startsWith("$2b$")) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
+//        if (!user.getPassword().startsWith("$2a$") && !user.getPassword().startsWith("$2b$")) {
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
     }
 
@@ -75,15 +78,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public void update(User updatedUser) {
         User existingUser = userDao.findById(updatedUser.getId());
 
-        existingUser.setUsername(updatedUser.getUsername());
-
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty() &&
                 !updatedUser.getPassword().equals(existingUser.getPassword())) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
-        existingUser.setRoles(updatedUser.getRoles());
-
-        userDao.updateUser(existingUser);
+        userDao.updateUser(updatedUser);
     }
 }

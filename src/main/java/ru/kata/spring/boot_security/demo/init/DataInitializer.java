@@ -34,8 +34,8 @@ public class DataInitializer implements ApplicationRunner {
         Role adminRole = getOrCreateRole("ROLE_ADMIN");
         Role userRole = getOrCreateRole("ROLE_USER");
 
-        addTestUser("admin", "$2a$12$t4Z7rFKRGyn0yZzejObpN.bA6.yjz/FTP4FBb0hxAiu1yqiaqal5.", Set.of(adminRole));
-        addTestUser("user", "$2a$12$XdzRmQFvOUz.67iN4CHAV.Sx5AXSN0JozLQzroq2z5sTyKBMl1MJu", Set.of(userRole));
+        addTestUser("admin", "admin", Set.of(adminRole));
+        addTestUser("user", "user", Set.of(userRole));
     }
 
     private void addTestUser(String username, String password, Set<Role> roles) {

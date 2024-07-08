@@ -7,7 +7,9 @@ import ru.kata.spring.boot_security.demo.models.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -34,6 +36,13 @@ public class RoleDaoImpl implements RoleDao {
     @Override
     public Role findById(Long id) {
         return entityManager.find(Role.class, id);
+    }
+
+    @Override
+    public Set<Role> findByIds(List<Long> ids) {
+        return new HashSet<>(entityManager.createQuery("SELECT r FROM Role r WHERE r.id IN :ids", Role.class)
+                .setParameter("ids", ids)
+                .getResultList());
     }
 
     @Override

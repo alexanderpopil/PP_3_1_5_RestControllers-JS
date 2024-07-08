@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.models.Role;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -17,21 +18,27 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Role findByName(String name) {
         return roleDao.findByName(name);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Role> findAll() {
         return roleDao.findAll();
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public Role findById(Long id) {
         return roleDao.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public Set<Role> findByIds(List<Long> ids) {
+        return roleDao.findByIds(ids);
     }
 
     @Override
