@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Set<Role> findByIds(List<Long> ids) {
         return roleDao.findByIds(ids);
     }

@@ -9,6 +9,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Set;
@@ -27,15 +28,25 @@ public class AdminController {
     }
 
     @GetMapping
-    public String listUsers(Model model) {
+    public String listUsers(Model model, Authentication authentication) {
         model.addAttribute("users", userService.findAll());
+        //
+        User user = (User) authentication.getPrincipal();
+        model.addAttribute("user", user);
+        model.addAttribute("newUser", new User());
+        model.addAttribute("roles", roleService.findAll());
+        //
         return "admin/user-list";
     }
 
     @GetMapping("/new")
-    public String newUserForm(Model model) {
-        model.addAttribute("user", new User());
+    public String newUserForm(Model model, Authentication authentication) {
+        model.addAttribute("userNew", new User());
         model.addAttribute("roles", roleService.findAll());
+        //
+        User user = (User) authentication.getPrincipal();
+        model.addAttribute("user", user);
+        //
         return "admin/user-form";
     }
 

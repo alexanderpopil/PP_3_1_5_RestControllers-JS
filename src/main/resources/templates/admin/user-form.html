@@ -1,39 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>User Form</title>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .nav-link.active {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+        .form-group label {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<h2 th:text="${user.id == null} ? 'Save User' : 'Edit User'"/>
-<br>
-<form th:action="@{${#strings.equals(user.id, null) ? '/admin/create' : '/admin/update'}}" th:object="${user}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <div>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" th:value="${user.username}"/>
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
+        <a class="navbar-brand" href="/admin" th:text="${user.username}">Navbar</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <!-- Навбар сверху с текстом -->
+                    <span class="navbar-text text-white">
+                    with roles: <span th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.name, 'ROLE_')} + ' '"></span>
+                    </span>
+                </li>
+            </ul>
+            <!-- Логаут -->
+            <form class="form-inline my-2 my-lg-0">
+                <a class="nav-link text-white-50" th:href="@{/logout}">Logout</a>
+            </form>
+        </div>
+    </nav>
+</div>
+<div class="container-fluid p-0 mt-2">
+    <div class="row">
+        <div class="col-md-2 bg-light">
+            <ul class="nav flex-column">
+            <li class="nav-item">
+                <!--                    <a class="nav-link active" th:href="@{/admin}">Admin</a>-->
+                <!--                    <a th:href="@{/admin}" class="btn btn-primary btn-lg active d-block w-100" role="button" aria-pressed="true">Admin</a>-->
+                <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/admin}">Admin</a>
+            </li>
+            <li class="nav-item">
+                <!--                    <a class="nav-link" th:href="@{/user}">User</a>-->
+                <!--                    <a th:href="@{/user}" class="btn btn-primary btn-lg active d-block w-100" role="button" aria-pressed="true">User</a>-->
+                <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/user')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/user}">User</a>
+            </li>
+        </ul>
+        </div>
+        <div class="col-md-10">
+            <h1>Admin panel</h1>
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin}">Users table</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/new}">New User</a>
+                    </li>
+                </ul>
+            </div>
+            <!--            -->
+            <div class="mt-2">
+                <h3>Add new user</h3>
+            </div>
+            <!--            -->
+            <div class="d-flex justify-content-center">
+                <form class="mt-3" th:action="@{/admin/create}" th:object="${userNew}" method="post">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" th:field="${userNew.username}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" th:field="${userNew.password}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roles">Roles</label>
+                        <select multiple class="form-control" id="roles" th:field="${userNew.roles}">
+                            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">ROLE_USER</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success">Add new user</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" th:value="${user.password}"/>
-    </div>
-    <div>
-        <label for="roles">Roles
-            <select id="roles" name="roles" multiple="multiple">
-                <option th:each="role : ${roles}"
-                        th:value="${role.id}"
-                        th:text="${role.name}"
-                        th:selected="${user.roles != null and user.roles.contains(role)}">
-                </option>
-            </select>
-        </label>
-    </div>
-    <br>
-    <div>
-        <button type="submit" th:text="${user.id == null} ? 'Add' : 'Save changes'"></button>
-    </div>
-    <br>
-</form>
-<a href="/admin">Back</a>
-<br>
+</div>
 </body>
 </html>

@@ -1,36 +1,195 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>Users</title>
+    <meta charset="UTF-8">
+    <title>Admin page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .nav-link.active {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+         .form-group label {
+             display: block;
+             text-align: center;
+             font-weight: bold;
+         }
+    </style>
 </head>
 <body>
-<h2>User List:</h2>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Roles</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.id}"/>
-        <td th:text="${user.username}"/>
-        <td>
-            <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
-        </td>
-        <td>
-            <a th:href="@{/admin/edit(id=${user.id})}">Edit</a>
-            <a th:href="@{/admin/delete(id=${user.id})}">Delete</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<br>
-<a th:href="@{/admin/new}">Add New User</a>
-<br>
-<a th:href="@{/logout}">Logout</a>
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
+        <a class="navbar-brand" href="/admin" th:text="${user.username}">Navbar</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <!-- Навбар сверху -->
+                    <span class="navbar-text text-white">
+                    with roles: <span th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.name, 'ROLE_')} + ' '"></span>
+                    </span>
+                </li>
+            </ul>
+            <!-- Логаут -->
+            <form class="form-inline my-2 my-lg-0">
+                <a class="nav-link text-white-50" th:href="@{/logout}">Logout</a>
+            </form>
+        </div>
+    </nav>
+</div>
+<div class="container-fluid p-0 mt-2">
+    <div class="row">
+        <div class="col-md-2 bg-light">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+<!--                    <a class="nav-link active" th:href="@{/admin}">Admin</a>-->
+<!--                    <a th:href="@{/admin}" class="btn btn-primary btn-lg active d-block w-100" role="button" aria-pressed="true">Admin</a>-->
+                    <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/admin}">Admin</a>
+                </li>
+                <li class="nav-item">
+<!--                    <a class="nav-link" th:href="@{/user}">User</a>-->
+<!--                    <a th:href="@{/user}" class="btn btn-primary btn-lg active d-block w-100" role="button" aria-pressed="true">User</a>-->
+                    <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/user')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/user}">User</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <h1>Admin panel</h1>
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin}">Users table</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/new}">New User</a>
+                    </li>
+                </ul>
+            </div>
+<!--            -->
+            <div class="mt-2">
+                <h3>All users</h3>
+            </div>
+<!--            -->
+            <table class="table table-striped mt-3">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Roles</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}">1</td>
+                    <td th:text="${user.username}">admin</td>
+                    <td>
+                        <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+                    </td>
+                    <td>
+                        <button class="btn btn-info" data-toggle="modal" th:data-target="'#editModal' + ${user.id}">Edit</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" data-toggle="modal" th:data-target="'#deleteModal' + ${user.id}">Delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка редакт -->
+<div th:each="user : ${users}">
+    <div class="modal fade" th:id="'editModal' + ${user.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex justify-content-center">
+                    <form th:action="@{/admin/update}" method="post">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <div class="form-group">
+                            <label for="id">ID</label>
+                            <input type="text" class="form-control" id="id" th:value="${user.id}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" th:value="${user.username}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" th:value="${user.password}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roles">Roles</label>
+                            <select multiple="multiple" class="form-control" id="roles" name="roles">
+                                <option th:each="role : ${roles}"
+                                        th:value="${role.id}"
+                                        th:text="${role.name}"
+                                        th:selected="${user.roles != null and user.roles.contains(role)}">ROLE_USER</option>
+                            </select>
+                        </div>
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка удалить -->
+<div th:each="user : ${users}">
+    <div class="modal fade" th:id="'deleteModal' + ${user.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex justify-content-center">
+                    <form th:action="@{/admin/delete}" >
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <div class="form-group">
+                            <label for="id2">ID</label>
+                            <input type="text" class="form-control" id="id2" th:value="${user.id}" disabled>
+                        </div>
+<!--                        -->
+                        <div class="form-group">
+                            <label for="username2">Username</label>
+                            <input type="text" class="form-control" id="username2" name="username" th:value="${user.username}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="roles2">Roles</label>
+                            <select multiple="multiple" class="form-control" id="roles2" name="roles" disabled>
+                                <option th:each="role : ${roles}"
+                                        th:text="${role.name}"
+                                        th:selected="${user.roles != null and user.roles.contains(role)}">ROLE_USER</option>
+                            </select>
+                        </div>
+<!--                        -->
+                        <p>Are you sure you want to delete user <strong th:text="${user.username}">username</strong>?</p>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
