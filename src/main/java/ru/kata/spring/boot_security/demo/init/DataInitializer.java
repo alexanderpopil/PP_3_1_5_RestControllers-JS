@@ -1,10 +1,7 @@
 package ru.kata.spring.boot_security.demo.init;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
@@ -34,16 +31,18 @@ public class DataInitializer implements ApplicationRunner {
         Role adminRole = getOrCreateRole("ROLE_ADMIN");
         Role userRole = getOrCreateRole("ROLE_USER");
 
-        addTestUser("admin", "admin", Set.of(adminRole));
-        addTestUser("user", "user", Set.of(userRole));
+        addTestUser("admin", "admin", 32, "admin.kata@gmail.com", Set.of(adminRole));
+        addTestUser("user", "user", 18, "user.kata@gmail.com", Set.of(userRole));
     }
 
-    private void addTestUser(String username, String password, Set<Role> roles) {
+    private void addTestUser(String username, String password, Integer age, String email, Set<Role> roles) {
         User byUsername = userService.findByUsername(username);
         if (byUsername == null) {
             User user = new User();
             user.setUsername(username);
             user.setPassword(password);
+            user.setAge(age);
+            user.setEmail(email);
             user.setRoles(roles);
             userService.save(user);
         }

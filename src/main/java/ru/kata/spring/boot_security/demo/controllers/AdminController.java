@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -8,12 +7,10 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
-import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -54,9 +51,6 @@ public class AdminController {
     public String createUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "roles", required = false) List<Long> roleIds) {
         if (roleIds != null) {
-//            Set<Role> roles = roleIds.stream()
-//                    .map(roleId -> roleService.findById(roleId))
-//                    .collect(Collectors.toSet());
             Set<Role> roles = roleService.findByIds(roleIds);
             user.setRoles(roles);
         }
@@ -76,9 +70,6 @@ public class AdminController {
     public String updateUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "roles", required = false) List<Long> roleIds) {
         if (roleIds != null) {
-//            Set<Role> roles = roleIds.stream()
-//                    .map(roleId -> roleService.findById(roleId))
-//                    .collect(Collectors.toSet());
             Set<Role> roles = roleService.findByIds(roleIds);
             user.setRoles(roles);
         }
