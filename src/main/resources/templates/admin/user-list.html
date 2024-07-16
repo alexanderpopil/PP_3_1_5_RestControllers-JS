@@ -26,19 +26,17 @@
 <body>
 <div class="container-fluid p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
-        <a class="navbar-brand" href="/admin" th:text="${user.username}">Navbar</a>
+        <a class="navbar-brand" href="/admin" id="navbar-username">Navbar</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <!-- Навбар сверху -->
                     <span class="navbar-text text-white">
-                    with roles: <span th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.name, 'ROLE_')} + ' '"></span>
+                    with roles: <span id="navbar-roles"></span>
                     </span>
                 </li>
             </ul>
-            <!-- Логаут -->
             <form class="form-inline my-2 my-lg-0">
-                <a class="nav-link text-white-50" th:href="@{/logout}">Logout</a>
+                <a class="nav-link text-white-50" href="/logout">Logout</a>
             </form>
         </div>
     </nav>
@@ -48,7 +46,9 @@
         <div class="col-md-2 bg-light">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/admin}">Admin</a>
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/admin}">Admin</a>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/user')} ? 'active bg-primary text-white w-100' : ''" th:href="@{/user}">User</a>
@@ -60,10 +60,10 @@
             <div>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/admin}">Users table</a>
+                        <a class="nav-link active" href="/admin">Users table</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/admin/new}">New User</a>
+                        <a class="nav-link" href="/admin/new">New User</a>
                     </li>
                 </ul>
             </div>

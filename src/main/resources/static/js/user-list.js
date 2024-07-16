@@ -1,8 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
     const userTableBody = document.getElementById('user-table-body');
 
+    function fetchUserInfo() {
+        // fetch('/api/users/me')
+        fetch('/api/admin/users/me')
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('navbar-username').textContent = user.username;
+                document.getElementById('navbar-roles').textContent = user.roles.map(role => role.name.substring(5)).join(', ');
+            });
+    }
+
+    fetchUserInfo();
+
     function fetchUsers() {
-        fetch('/api/users')
+        // fetch('/api/users')
+        fetch('/api/admin/users')
             .then(response => response.json())
             .then(users => {
                 userTableBody.innerHTML = '';
@@ -25,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function fetchRoles(selectElement) {
-        fetch('/api/roles')
+        // fetch('/api/roles')
+        fetch('/api/admin/roles')
             .then(response => response.json())
             .then(roles => {
                 selectElement.innerHTML = '';
@@ -39,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-target="#editModal"]').forEach(button => {
             button.addEventListener('click', event => {
                 const userId = event.target.getAttribute('data-id');
-                fetch(`/api/users/${userId}`)
+                // fetch(`/api/users/${userId}`)
+                fetch(`/api/admin/users/${userId}`)
                     .then(response => response.json())
                     .then(user => {
                         document.getElementById('edit-user-id').value = user.id;
@@ -63,7 +78,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-target="#deleteModal"]').forEach(button => {
             button.addEventListener('click', event => {
                 const userId = event.target.getAttribute('data-id');
-                fetch(`/api/users/${userId}`)
+                // fetch(`/api/users/${userId}`)
+                fetch(`/api/admin/users/${userId}`)
                     .then(response => response.json())
                     .then(user => {
                         document.getElementById('delete-user-id').value = user.id;
@@ -89,7 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(event.target);
         const data = Object.fromEntries(formData.entries());
         data.roles = Array.from(document.getElementById('edit-roles').selectedOptions).map(option => ({ id: option.value }));
-        fetch(`/api/users/${userId}`, {
+        // fetch(`/api/users/${userId}`, {
+        // fetch(`/api/users`, {
+        fetch(`/api/admin/users`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('delete-user-form').addEventListener('submit', function (event) {
         event.preventDefault();
         const userId = document.getElementById('delete-user-id').value;
-        fetch(`/api/users/${userId}`, {
+        // fetch(`/api/users/${userId}`, {
+        fetch(`/api/admin/users/${userId}`, {
             method: 'DELETE'
         }).then(response => {
             if (response.ok) {

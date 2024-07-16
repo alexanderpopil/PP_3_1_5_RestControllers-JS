@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     function fetchRoles() {
-        fetch('/api/roles')
+        // fetch('/api/roles')
+        fetch('/api/admin/roles')
             .then(response => response.json())
             .then(roles => {
                 const rolesSelect = document.getElementById('roles');
@@ -10,12 +11,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    function fetchUserInfo() {
+        // fetch('/api/users/me')
+        fetch('/api/admin/users/me')
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('navbar-username').textContent = user.username;
+                document.getElementById('navbar-roles').textContent = user.roles.map(role => role.name.substring(5)).join(', ');
+            });
+    }
+
+    fetchUserInfo();
+
     document.getElementById('user-form').addEventListener('submit', function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
         const data = Object.fromEntries(formData.entries());
         data.roles = Array.from(document.getElementById('roles').selectedOptions).map(option => ({ id: option.value }));
-        fetch('/api/users', {
+        // fetch('/api/users', {
+        fetch('/api/admin/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

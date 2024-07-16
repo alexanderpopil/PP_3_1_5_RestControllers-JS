@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     function fetchUserInfo() {
-        fetch('/api/users/me')
+        // fetch('/api/users/me')
+        fetch('/api/user/users/me')
             .then(response => response.json())
             .then(user => {
                 document.getElementById('navbar-username').textContent = user.username;
